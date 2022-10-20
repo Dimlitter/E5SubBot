@@ -156,6 +156,7 @@ func Sign(clients []*model.Client) []*ErrClient {
 	done := make(chan struct{})
 	in := make(chan *ErrClient, 5)
 	out := make(chan *ErrClient, 5)
+	pool := microsoft.GetBuiltinPool()
 
 	go func() {
 		for _, client := range clients {
@@ -175,7 +176,7 @@ func Sign(clients []*model.Client) []*ErrClient {
 						continue
 					}
 
-					newRefresh, _, err := microsoft.GetOutlookMails(errCli.ClientId, errCli.ClientSecret, errCli.RefreshToken)
+					newRefresh, _, err := (*pool.GetFlow()).Run(errCli.ClientId, errCli.ClientSecret, errCli.RefreshToken)
 					errCli.Err = err
 					errCli.RefreshToken = newRefresh
 					out <- errCli
