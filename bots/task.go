@@ -2,6 +2,9 @@ package bots
 
 import (
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/iyear/E5SubBot/config"
 	"github.com/iyear/E5SubBot/model"
 	"github.com/iyear/E5SubBot/pkg/microsoft"
@@ -9,8 +12,6 @@ import (
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 	tb "gopkg.in/tucnak/telebot.v2"
-	"strconv"
-	"time"
 )
 
 type ErrClient struct {
@@ -95,8 +96,7 @@ func adminSummary(errClients []*ErrClient, timeSpending float64) {
 }
 func usersSummary(errClients []*ErrClient) {
 
-	var isSent map[int64]bool
-	isSent = make(map[int64]bool)
+	var isSent = make(map[int64]bool)
 
 	for _, errClient := range errClients {
 		errClient := errClient
@@ -175,7 +175,7 @@ func Sign(clients []*model.Client) []*ErrClient {
 						continue
 					}
 
-					newRefresh, err := microsoft.GetOutlookMails(errCli.ClientId, errCli.ClientSecret, errCli.RefreshToken)
+					newRefresh, _, err := microsoft.GetOutlookMails(errCli.ClientId, errCli.ClientSecret, errCli.RefreshToken)
 					errCli.Err = err
 					errCli.RefreshToken = newRefresh
 					out <- errCli
